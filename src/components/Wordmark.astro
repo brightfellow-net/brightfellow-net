@@ -5,7 +5,7 @@ interface Props { href?: string; label?: string; class?: string }
 const { href, label = 'Brightfellow', class: className } = Astro.props;
 const Tag = href ? 'a' : 'span';
 ---
-<Tag class:list={["wm", className]} href={href} aria-label={label} role={href ? undefined : "img"}><span aria-hidden="true">br<span class="i">ı<Mark /></span>ghtfellow</span></Tag>
+<Tag class:list={["wm", className]} href={href} aria-label={label} role={href ? undefined : "img"}><span aria-hidden="true">Br<span class="i">ı<Mark /></span>ghtfellow</span></Tag>
 
 <style>
   .wm {
