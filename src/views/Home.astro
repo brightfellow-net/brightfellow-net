@@ -1,0 +1,168 @@
+---
+import Base from '../layouts/Base.astro';
+import Mark from '../components/Mark.astro';
+import StatusLabel from '../components/StatusLabel.astro';
+import { localize, ui, type Lang } from '../i18n/ui';
+import { getCatalog } from '../data/catalog';
+import { site } from '../site';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = ui[lang];
+const catalog = await getCatalog();
+const l = (path: string) => localize(lang, path);
+
+const copy = {
+  id: {
+    description: 'Brightfellow adalah komunitas yang membangun dan merawat alat open-source sederhana untuk komunitas dan organisasi kecil. Gratis dijalankan sendiri.',
+    title: 'Alat sederhana dan terbuka, dibuat bersama komunitas.',
+    lede: 'Brightfellow adalah komunitas yang membangun dan merawat alat open-source untuk komunitas dan organisasi kecil. Semua alat gratis dijalankan sendiri, atau kami yang mengelolanya untuk Anda.',
+    join: 'Ikut bergabung',
+    whoTitle: 'Untuk siapa',
+    whoText: 'Alat pertama kami dibuat untuk gereja. Alat untuk komunitas lain menyusul.',
+    see: 'Lihat alat untuk',
+    waysTitle: 'Dua cara memakai',
+    selfTitle: 'Jalankan sendiri',
+    selfText: 'Gratis. Kodenya terbuka, dijalankan di server atau komputer Anda sendiri, dan datanya tetap di tangan Anda.',
+    hostedTitle: 'Kami yang kelola',
+    hostedText: 'Untuk organisasi yang tidak ingin mengurus server. Setiap organisasi mendapat ruangnya sendiri. Biaya akan diumumkan.',
+    compare: 'Bandingkan kedua cara',
+    openTitle: 'Terbuka untuk diperiksa',
+    openItems: [
+      'Semua kode ada di GitHub dengan lisensi Apache-2.0: boleh dipakai, diubah, dan dijalankan sendiri, termasuk untuk keperluan komersial.',
+      'Siapa pun bisa melihat cara kerjanya, melaporkan masalah, dan mengusulkan perbaikan.',
+      'Situs ini tanpa pelacak, tanpa cookie, dan tanpa skrip pihak ketiga.',
+    ],
+    license: 'Lisensi dan keamanan',
+    joinTitle: 'Mari bangun bersama',
+    joinText: 'Komunitas ini baru dimulai. Anggota awal ikut menentukan alat apa yang dibuat dan bagaimana alat itu bekerja, entah dengan memakai, menguji, menerjemahkan, atau menulis kode.',
+    joinCta: 'Lihat cara ikut serta',
+  },
+  en: {
+    description: 'Brightfellow is a community that builds and looks after simple, open-source tools for communities and small organizations. Free to run yourself.',
+    title: 'Simple, open tools, built together with communities.',
+    lede: 'Brightfellow is a community that builds and looks after open-source tools for communities and small organizations. Every tool is free to run yourself, or we can run it for you.',
+    join: 'Get involved',
+    whoTitle: 'Who it’s for',
+    whoText: 'Our first tools are for churches. Tools for other communities will follow.',
+    see: 'See tools for',
+    waysTitle: 'Two ways to use it',
+    selfTitle: 'Run it yourself',
+    selfText: 'Free. The code is open, it runs on your own server or computer, and your data stays in your hands.',
+    hostedTitle: 'We run it for you',
+    hostedText: 'For organizations that don’t want to look after a server. Each organization gets its own space. Pricing will be announced.',
+    compare: 'Compare the two',
+    openTitle: 'Open to inspect',
+    openItems: [
+      'All code is on GitHub under the Apache-2.0 license: free to use, change, and run yourself, including for commercial use.',
+      'Anyone can see how it works, report problems, and suggest improvements.',
+      'This site has no trackers, no cookies, and no third-party scripts.',
+    ],
+    license: 'License and security',
+    joinTitle: 'Let’s build it together',
+    joinText: 'This community is just getting started. Early members help decide which tools get made and how they work, whether by using, testing, translating, or writing code.',
+    joinCta: 'See how to take part',
+  },
+}[lang];
+---
+<Base description={copy.description}>
+  <div class="wrap page">
+    <section class="hero">
+      <div class="hero-text">
+        <h1>{copy.title}</h1>
+        <p class="lede">{copy.lede}</p>
+        <div class="actions">
+          <a class="btn" href={l('/community/')}>{copy.join}</a>
+          <a class="arrow" href={l('/contact/')}>{t.contactUs}</a>
+        </div>
+      </div>
+      <Mark class="glow" />
+    </section>
+
+    <section class="section">
+      <header>
+        <h2>{copy.whoTitle}</h2>
+        <p>{copy.whoText}</p>
+      </header>
+      <ul class="audiences">
+        {catalog.map(({ category, tools }) => (
+          <li>
+            <h3><a href={l(`/for/${category.slug}/`)}>{category.name[lang]}</a></h3>
+            <p class="muted">{category.summary[lang]}</p>
+            <ul class="names">
+              {tools.map((tool) => (
+                <li><a href={l(`/tools/${tool.slug}/`)}>{tool.name}</a><StatusLabel status={tool.status} lang={lang} /></li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="section">
+      <header><h2>{copy.waysTitle}</h2></header>
+      <div class="ways">
+        <div>
+          <h3>{copy.selfTitle}</h3>
+          <p class="muted">{copy.selfText}</p>
+        </div>
+        <div>
+          <h3>{copy.hostedTitle}</h3>
+          <p class="muted">{copy.hostedText}</p>
+        </div>
+      </div>
+      <a class="arrow" href={l('/hosting/')}>{copy.compare}</a>
+    </section>
+
+    <section class="section">
+      <header><h2>{copy.openTitle}</h2></header>
+      <ul class="lit prose">
+        {copy.openItems.map((item) => <li><Mark /><span>{item}</span></li>)}
+      </ul>
+      <div class="actions">
+        <a class="arrow" href={site.github}>{t.viewCode}</a>
+        <a class="arrow" href={l('/open-source/')}>{copy.license}</a>
+      </div>
+    </section>
+
+    <section class="section together">
+      <header>
+        <h2>{copy.joinTitle}</h2>
+        <p>{copy.joinText}</p>
+      </header>
+      <div class="actions">
+        <a class="btn" href={l('/community/')}>{copy.joinCta}</a>
+        <a class="arrow" href={l('/contact/')}>{t.contactUs}</a>
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .hero { position: relative; display: grid; gap: 24px; }
+  .hero-text { display: grid; gap: 18px; max-width: 720px; }
+  .hero h1 { font-size: clamp(34px, 7vw, 56px); line-height: 1.12; padding-right: 64px; }
+  .hero .lede { font-size: clamp(18px, 2.4vw, 21px); }
+  .hero-text .actions { margin-top: 6px; }
+  .hero :global(.glow) {
+    position: absolute; top: 4px; right: 0;
+    width: 64px; height: 40px;
+    animation: rise 1.8s ease-out both;
+  }
+  @keyframes rise { from { opacity: 0.2; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @media (min-width: 900px) {
+    .hero { grid-template-columns: 1fr 260px; align-items: center; }
+    .hero h1 { padding-right: 0; }
+    .hero :global(.glow) { position: static; width: 240px; height: 150px; justify-self: end; }
+  }
+
+  .audiences { list-style: none; padding: 0; display: grid; gap: 28px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); }
+  .audiences > li { display: grid; gap: 8px; align-content: start; }
+  .audiences h3 { font-size: 24px; }
+  .names { list-style: none; padding: 0; display: grid; gap: 6px; margin-top: 4px; }
+  .names li { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; padding-block: 8px; border-top: 1px solid var(--rule); max-width: 420px; }
+  .names a { font-weight: 600; }
+
+  .ways { display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); max-width: 860px; }
+  .ways > div { display: grid; gap: 6px; align-content: start; }
+</style>

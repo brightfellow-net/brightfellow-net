@@ -1,0 +1,124 @@
+---
+import Wordmark from './Wordmark.astro';
+import { ui, localize, stripLang, primaryNav, type Lang } from '../i18n/ui';
+import { getCatalog } from '../data/catalog';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = ui[lang];
+const other: Lang = lang === 'id' ? 'en' : 'id';
+const current = stripLang(Astro.url.pathname);
+const catalog = await getCatalog();
+const isCurrent = (path: string) => current === path || (path !== '/' && current.startsWith(path));
+---
+<header class="site-header">
+  <div class="wrap bar">
+    <Wordmark href={localize(lang, '/')} label={`Brightfellow, ${t.home.toLowerCase()}`} class="logo" />
+    <button class="toggle" type="button" aria-expanded="false" aria-controls="site-nav" hidden>{t.menu}</button>
+    <nav id="site-nav" class="nav" aria-label={t.nav}>
+      <ul class="nav-list">
+        <li class="tools-item">
+          <details class="tools-menu">
+            <summary aria-current={isCurrent('/tools/') || isCurrent('/for/') ? 'page' : undefined}>{t.tools}</summary>
+            <div class="panel">
+              {catalog.map(({ category, tools }) => (
+                <div class="group">
+                  <a class="group-name" href={localize(lang, `/for/${category.slug}/`)}>{category.name[lang]}</a>
+                  <ul>
+                    {tools.map((tool) => (
+                      <li><a href={localize(lang, `/tools/${tool.slug}/`)}>{tool.name}</a></li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+              <a class="all arrow" href={localize(lang, '/tools/')}>{t.allTools}</a>
+            </div>
+          </details>
+        </li>
+        {primaryNav.map((item) => (
+          <li><a href={localize(lang, item.path)} aria-current={isCurrent(item.path) ? 'page' : undefined}>{t[item.key]}</a></li>
+        ))}
+      </ul>
+      <a class="lang" href={localize(other, current)} hreflang={other} lang={other}>{t.otherLang}</a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector<HTMLElement>('.site-header');
+  const toggle = header?.querySelector<HTMLButtonElement>('.toggle');
+  const nav = header?.querySelector<HTMLElement>('.nav');
+  const menu = header?.querySelector<HTMLDetailsElement>('.tools-menu');
+  if (header && toggle && nav && menu) {
+    header.classList.add('js');
+    toggle.hidden = false;
+    const labels = { open: toggle.textContent, close: document.documentElement.lang === 'en' ? 'Close' : 'Tutup' };
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.textContent = open ? labels.close : labels.open;
+      nav.classList.toggle('open', open);
+    };
+    toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+    // Close the desktop Tools dropdown on outside click or Escape.
+    document.addEventListener('click', (e) => {
+      if (menu.open && !menu.contains(e.target as Node)) menu.open = false;
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      if (menu.open) { menu.open = false; menu.querySelector('summary')?.focus(); }
+      else if (nav.classList.contains('open')) { setOpen(false); toggle.focus(); }
+    });
+  }
+</script>
+
+<style>
+  .site-header { border-bottom: 1px solid var(--rule); background: var(--paper); }
+  .bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; padding-block: 14px; }
+  .bar :global(.logo) { font-size: 26px; padding-block: 4px; }
+
+  .toggle {
+    font: inherit; font-size: 16px; font-weight: 600;
+    color: var(--ink); background: transparent;
+    border: 1px solid var(--rule); border-radius: 6px;
+    padding: 7px 14px; cursor: pointer;
+  }
+
+  .nav { flex-basis: 100%; display: grid; gap: 16px; padding-block: 8px 12px; }
+  .nav-list { list-style: none; padding: 0; display: grid; gap: 4px; }
+  .nav a, summary { color: var(--ink); text-decoration: none; font-size: 17px; }
+  .nav-list > li > a, summary { display: block; padding: 8px 0; }
+  .nav a:hover { text-decoration: underline; }
+  [aria-current="page"] { text-decoration: underline; text-decoration-color: var(--lamp); text-decoration-thickness: 3px; text-underline-offset: 6px; }
+
+  summary { cursor: pointer; list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: ""; display: inline-block; width: 7px; height: 7px; margin-left: 8px; border: solid currentColor; border-width: 0 1.5px 1.5px 0; transform: translateY(-3px) rotate(45deg); }
+  details[open] summary::after { transform: translateY(1px) rotate(-135deg); }
+
+  .panel { display: grid; gap: 16px; padding: 4px 0 12px 16px; border-left: 2px solid var(--rule); }
+  .group { display: grid; gap: 4px; }
+  .nav .group-name { font-size: 14px; color: var(--muted); }
+  .group ul { list-style: none; padding: 0; display: grid; gap: 2px; }
+  .group li a { display: block; padding: 4px 0; font-family: var(--serif); font-weight: 600; }
+  .nav .all { color: var(--link); font-size: 16px; }
+
+  .lang { justify-self: start; font-size: 15px !important; color: var(--muted) !important; border: 1px solid var(--rule); border-radius: 6px; padding: 5px 12px; }
+
+  /* With JS on small screens, the nav collapses behind the Menu button. */
+  .js .nav { display: none; }
+  .js .nav.open { display: grid; }
+
+  @media (min-width: 900px) {
+    .toggle { display: none; }
+    .nav, .js .nav { display: flex; flex-basis: auto; align-items: center; gap: 28px; padding: 0; }
+    .nav-list { display: flex; align-items: center; gap: 24px; }
+    .nav-list > li > a, summary { padding: 6px 0; }
+    .tools-item { position: relative; }
+    .panel {
+      position: absolute; top: calc(100% + 12px); left: -20px; z-index: 5;
+      min-width: 260px; padding: 18px 20px;
+      background: var(--paper); border: 1px solid var(--rule); border-radius: 8px;
+      box-shadow: 0 10px 30px -12px rgb(0 0 0 / 0.25);
+    }
+  }
+</style>

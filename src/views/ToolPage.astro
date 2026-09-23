@@ -1,0 +1,132 @@
+---
+import { getEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Mark from '../components/Mark.astro';
+import StatusLabel from '../components/StatusLabel.astro';
+import { localize, ui, type Lang } from '../i18n/ui';
+import { getCategories, type Tool } from '../data/catalog';
+import { site, mailto } from '../site';
+
+interface Props { lang: Lang; tool: Tool }
+const { lang, tool } = Astro.props;
+const t = ui[lang];
+const l = (path: string) => localize(lang, path);
+// Optional long-form content: src/content/tool-pages/<slug>/<lang>.md
+const page = (await getEntry('toolPages', `${tool.slug}/${lang}`))?.data;
+const categories = (await getCategories()).filter((c) => tool.categories.includes(c.slug));
+
+const copy = {
+  id: {
+    problem: 'Masalahnya',
+    does: 'Apa yang dilakukannya',
+    forWho: 'Untuk siapa',
+    use: 'Cara memakai',
+    selfHost: 'Jalankan sendiri',
+    hosted: 'Kami yang kelola',
+    compare: 'Bandingkan kedua cara',
+    code: 'Kode',
+    codeText: `Kode ${tool.name} terbuka dengan lisensi Apache-2.0.`,
+    noRepo: 'Repositori alat ini belum dipublikasikan.',
+    org: 'Lihat organisasi di GitHub',
+    askTitle: `Punya pertanyaan tentang ${tool.name}?`,
+    askText: 'Tulis saja. Kami senang membantu Anda memulai.',
+  },
+  en: {
+    problem: 'The problem',
+    does: 'What it does',
+    forWho: 'Who it’s for',
+    use: 'How to use it',
+    selfHost: 'Run it yourself',
+    hosted: 'We run it for you',
+    compare: 'Compare the two',
+    code: 'Code',
+    codeText: `${tool.name} is open source under the Apache-2.0 license.`,
+    noRepo: 'This tool’s repository hasn’t been published yet.',
+    org: 'See the organization on GitHub',
+    askTitle: `Questions about ${tool.name}?`,
+    askText: 'Just write to us. We’re happy to help you get started.',
+  },
+}[lang];
+const invite = page?.invite ?? { title: copy.askTitle, text: copy.askText };
+---
+<Base title={tool.name} description={page?.lede ?? tool.description[lang]}>
+  <div class="wrap page">
+    <header class="page-head">
+      <p class="crumbs"><a href={l('/tools/')}>{t.tools}</a> / {tool.name}</p>
+      <h1>{tool.name}</h1>
+      <p class="lede">{page?.lede ?? tool.description[lang]}</p>
+      <div class="meta">
+        <StatusLabel status={tool.status} lang={lang} />
+        {tool.repository && <a class="arrow" href={tool.repository}>{t.viewCode}</a>}
+      </div>
+      {page?.note && <p class="notice">{page.note}</p>}
+    </header>
+
+    {page && (
+      <section class="section">
+        <header><h2>{copy.problem}</h2></header>
+        <div class="prose">{page.problem.map((p) => <p>{p}</p>)}</div>
+      </section>
+    )}
+
+    {page && (
+      <section class="section">
+        <header><h2>{copy.does}</h2></header>
+        <ul class="lit prose">
+          {page.features.map((f) => <li><Mark /><span>{f}</span></li>)}
+        </ul>
+      </section>
+    )}
+
+    <section class="section">
+      <header><h2>{copy.forWho}</h2></header>
+      <ul class="cats">
+        {categories.map((c) => (
+          <li><a href={l(`/for/${c.slug}/`)}>{c.name[lang]}</a> <span class="muted">{c.summary[lang]}</span></li>
+        ))}
+      </ul>
+    </section>
+
+    {page && (
+      <section class="section">
+        <header><h2>{copy.use}</h2></header>
+        <div class="ways">
+          <div><h3>{copy.selfHost}</h3><p class="muted">{page.selfHost}</p></div>
+          <div><h3>{copy.hosted}</h3><p class="muted">{page.hosted}</p></div>
+        </div>
+        <a class="arrow" href={l('/hosting/')}>{copy.compare}</a>
+      </section>
+    )}
+
+    <section class="section">
+      <header>
+        <h2>{copy.code}</h2>
+        <p>{tool.repository ? copy.codeText : copy.noRepo}</p>
+      </header>
+      <div class="actions">
+        {tool.repository
+          ? <a class="arrow" href={tool.repository}>{t.viewCode}</a>
+          : <a class="arrow" href={site.github}>{copy.org}</a>}
+      </div>
+    </section>
+
+    <section class="section">
+      <header>
+        <h2>{invite.title}</h2>
+        <p>{invite.text}</p>
+      </header>
+      <div class="actions">
+        <a class="btn" href={mailto(tool.name)}>{t.contactUs}</a>
+        <span class="small muted">{site.email}</span>
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; }
+  .cats { list-style: none; padding: 0; display: grid; gap: 8px; }
+  .cats a { font-weight: 600; margin-right: 6px; }
+  .ways { display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); max-width: 860px; }
+  .ways > div { display: grid; gap: 6px; align-content: start; }
+</style>

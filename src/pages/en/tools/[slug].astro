@@ -1,0 +1,10 @@
+---
+import View from '../../../views/ToolPage.astro';
+import { getTools, type Tool } from '../../../data/catalog';
+
+export async function getStaticPaths() {
+  return (await getTools()).map((tool) => ({ params: { slug: tool.slug }, props: { tool } }));
+}
+const { tool } = Astro.props as { tool: Tool };
+---
+<View lang="en" tool={tool} />

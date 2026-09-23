@@ -1,0 +1,98 @@
+---
+import Base from '../layouts/Base.astro';
+import { localize, ui, type Lang } from '../i18n/ui';
+import { getTools } from '../data/catalog';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = ui[lang];
+const tools = await getTools();
+
+const copy = {
+  id: {
+    title: 'Jalankan sendiri, atau kami yang kelola',
+    short: 'Hosting',
+    description: 'Setiap alat Brightfellow gratis dijalankan sendiri. Bagi yang tidak ingin mengurus server, ada versi yang kami kelola.',
+    lede: 'Setiap alat Brightfellow gratis dijalankan sendiri. Bagi organisasi yang tidak ingin mengurus server, kami bisa mengelolanya untuk Anda.',
+    caption: 'Perbandingan menjalankan sendiri dan versi yang kami kelola',
+    cols: ['', 'Jalankan sendiri', 'Kami yang kelola'],
+    rows: [
+      ['Siapa yang menjalankan server', 'Anda, atau relawan teknis di tim Anda', 'Kami'],
+      ['Pembaruan', 'Anda yang memasangnya', 'Kami yang memasangnya'],
+      ['Cadangan data', 'Anda yang mengaturnya', 'Kami yang mengaturnya'],
+      ['Di mana data Anda', 'Di server atau komputer Anda', 'Di ruang tersendiri untuk organisasi Anda'],
+      ['Biaya', 'Gratis', 'Segera diumumkan'],
+      ['Cocok untuk', 'Tim yang punya seseorang yang nyaman mengurus server', 'Tim tanpa orang teknis'],
+    ],
+    perTool: 'Setiap alat berbeda',
+    perToolText: 'Beberapa alat, seperti Bibliosphere, adalah aplikasi desktop dan tidak memerlukan server sama sekali. Rincian untuk setiap alat ada di halamannya.',
+    askTitle: 'Belum yakin mana yang cocok?',
+    askText: 'Ceritakan sedikit tentang organisasi Anda, dan kami bantu memilih.',
+  },
+  en: {
+    title: 'Run it yourself, or we run it for you',
+    short: 'Hosting',
+    description: 'Every Brightfellow tool is free to run yourself. For those who don’t want to look after a server, we can run it for you.',
+    lede: 'Every Brightfellow tool is free to run yourself. For organizations that don’t want to look after a server, we can run it for you.',
+    caption: 'Comparison of running it yourself and the version we run for you',
+    cols: ['', 'Run it yourself', 'We run it for you'],
+    rows: [
+      ['Who runs the server', 'You, or a technical volunteer on your team', 'We do'],
+      ['Updates', 'You install them', 'We install them'],
+      ['Backups', 'You set them up', 'We set them up'],
+      ['Where your data lives', 'On your own server or computer', 'In a separate space for your organization'],
+      ['Cost', 'Free', 'Coming soon'],
+      ['Good for', 'Teams with someone comfortable running a server', 'Teams without a technical person'],
+    ],
+    perTool: 'Each tool is different',
+    perToolText: 'Some tools, like Bibliosphere, are desktop apps and don’t need a server at all. Each tool’s page has the details.',
+    askTitle: 'Not sure which fits?',
+    askText: 'Tell us a little about your organization, and we’ll help you choose.',
+  },
+}[lang];
+---
+<Base title={copy.short} description={copy.description}>
+  <div class="wrap page">
+    <header class="page-head">
+      <h1>{copy.title}</h1>
+      <p class="lede">{copy.lede}</p>
+    </header>
+
+    <div class="table-wrap">
+      <table>
+        <caption class="visually-hidden">{copy.caption}</caption>
+        <thead>
+          <tr>{copy.cols.map((c, i) => i === 0 ? <td></td> : <th scope="col">{c}</th>)}</tr>
+        </thead>
+        <tbody>
+          {copy.rows.map(([label, self, hosted]) => (
+            <tr><th scope="row">{label}</th><td>{self}</td><td>{hosted}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <section class="section">
+      <header>
+        <h2>{copy.perTool}</h2>
+        <p>{copy.perToolText}</p>
+      </header>
+      <ul class="links">
+        {tools.map((tool) => <li><a class="arrow" href={localize(lang, `/tools/${tool.slug}/`)}>{tool.name}</a></li>)}
+      </ul>
+    </section>
+
+    <section class="section">
+      <header>
+        <h2>{copy.askTitle}</h2>
+        <p>{copy.askText}</p>
+      </header>
+      <div class="actions"><a class="btn" href={localize(lang, '/contact/')}>{t.contactUs}</a></div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  table { max-width: 900px; }
+  .links { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 24px; }
+</style>

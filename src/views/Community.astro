@@ -1,0 +1,138 @@
+---
+import Base from '../layouts/Base.astro';
+import { localize, type Lang } from '../i18n/ui';
+import { getTools } from '../data/catalog';
+import { site, mailto } from '../site';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const l = (path: string) => localize(lang, path);
+const reposWithIssues = (await getTools()).filter((t) => t.repository);
+
+const copy = {
+  id: {
+    title: 'Komunitas',
+    description: 'Brightfellow baru dimulai. Pakai alatnya, laporkan masalah, usulkan fitur, bantu menerjemahkan, uji versi baru, atau tulis kode.',
+    h1: 'Komunitas yang dibangun bersama',
+    lede: 'Nama kami berasal dari kata fellow: teman, rekan seperjalanan. Brightfellow adalah komunitas orang-orang yang membuat dan merawat alat sederhana untuk komunitas dan organisasi kecil.',
+    whyTitle: 'Mengapa komunitas ini ada',
+    why: [
+      'Banyak komunitas kecil mengurus pekerjaan rutinnya lewat berkas yang dikirim bolak-balik di chat. Alat yang ada sering terlalu rumit, terlalu mahal, atau menyimpan data di tempat yang tidak mereka kendalikan.',
+      'Kami ingin membuat alat yang sederhana, terbuka, dan bisa dijalankan sendiri, bersama orang-orang yang memakainya. Setiap alat dibuat terbuka, dan setiap masukan ikut membentuknya.',
+    ],
+    honest: 'Komunitas ini baru dimulai dan saat ini dipimpin oleh pendirinya. Karena itu, orang yang bergabung sekarang ikut menentukan arahnya sejak awal.',
+    waysTitle: 'Cara ikut serta',
+    waysText: 'Anda tidak harus bisa menulis kode. Pilih yang paling cocok untuk Anda.',
+    noGithub: 'Tidak punya akun GitHub? Kirim email saja.',
+    issuesFor: 'Buka issue untuk',
+    ways: [
+      { id: 'masukan', title: 'Pakai alatnya dan beri masukan', text: 'Coba salah satu alat kami, lalu ceritakan apa yang membantu dan apa yang membingungkan. Masukan dari pemakai sehari-hari adalah yang paling berharga.', cta: 'Kirim masukan lewat email', href: mailto('Masukan') },
+      { id: 'lapor', title: 'Laporkan masalah', text: 'Menemukan sesuatu yang tidak berjalan? Tulis apa yang Anda lakukan, apa yang Anda harapkan, dan apa yang terjadi.', issues: true, cta: 'Laporkan lewat email', href: mailto('Laporan masalah') },
+      { id: 'usul', title: 'Usulkan fitur', text: 'Ceritakan pekerjaan apa yang ingin Anda permudah. Mulailah dari masalahnya, bukan dari solusinya.', issues: true, cta: 'Kirim usulan lewat email', href: mailto('Usulan fitur') },
+      { id: 'terjemahan', title: 'Bantu menerjemahkan', text: 'Alat dan situs ini dibuat dalam bahasa Indonesia dan Inggris. Bantu kami membuat keduanya terasa alami, bukan seperti terjemahan mesin.', cta: 'Tawarkan bantuan terjemahan', href: mailto('Bantu menerjemahkan') },
+      { id: 'uji', title: 'Uji versi baru', text: 'Coba versi baru sebelum dirilis untuk umum, lalu kabari kami jika ada yang janggal.', cta: 'Daftar sebagai penguji', href: mailto('Ingin menjadi penguji') },
+      { id: 'kode', title: 'Kontribusi kode', text: 'Semua kode kami ada di GitHub dengan lisensi Apache-2.0. Pilih issue, diskusikan rencananya, lalu kirim pull request.', cta: 'Lihat organisasi di GitHub', href: site.github, extra: { text: 'Baca panduan kontribusi', href: '#panduan' } },
+    ],
+    guideTitle: 'Panduan kontribusi',
+    guide: [
+      'Mulailah dari issue. Tulis dulu apa yang ingin Anda ubah dan mengapa, supaya tidak ada pekerjaan ganda.',
+      'Buat perubahan kecil dan terfokus: satu hal per pull request.',
+      'Jelaskan cara menguji perubahan Anda.',
+      'Dengan mengirim kontribusi, Anda setuju kontribusi itu dilisensikan dengan Apache-2.0, sama seperti proyeknya.',
+      'Bersikap ramah dan sabar. Kita semua sedang belajar.',
+    ],
+    guideMore: 'Pertanyaan tentang lisensi atau keamanan?',
+    guideLink: 'Baca halaman open source',
+  },
+  en: {
+    title: 'Community',
+    description: 'Brightfellow is just getting started. Use the tools, report problems, suggest features, help translate, test new versions, or write code.',
+    h1: 'A community built together',
+    lede: 'Our name comes from the word fellow: a friend, a companion on the way. Brightfellow is a community of people who build and look after simple tools for communities and small organizations.',
+    whyTitle: 'Why this community exists',
+    why: [
+      'Many small communities run their routine work through files sent back and forth in chats. The tools that exist are often too complicated, too expensive, or keep data somewhere they don’t control.',
+      'We want to build tools that are simple, open, and can be run on your own, together with the people who use them. Every tool is built in the open, and every piece of feedback helps shape it.',
+    ],
+    honest: 'This community is just getting started and is currently led by its founder. That means the people who join now help set its direction from the beginning.',
+    waysTitle: 'Ways to take part',
+    waysText: 'You don’t need to write code. Pick whatever suits you.',
+    noGithub: 'No GitHub account? Just send an email.',
+    issuesFor: 'Open an issue for',
+    ways: [
+      { id: 'feedback', title: 'Use a tool and share feedback', text: 'Try one of our tools, then tell us what helped and what was confusing. Feedback from everyday users is the most valuable kind.', cta: 'Send feedback by email', href: mailto('Feedback') },
+      { id: 'report', title: 'Report a problem', text: 'Found something that doesn’t work? Tell us what you did, what you expected, and what happened.', issues: true, cta: 'Report it by email', href: mailto('Problem report') },
+      { id: 'suggest', title: 'Suggest a feature', text: 'Tell us which work you’d like to make easier. Start from the problem, not the solution.', issues: true, cta: 'Send a suggestion by email', href: mailto('Feature suggestion') },
+      { id: 'translate', title: 'Help translate', text: 'The tools and this site are made in Indonesian and English. Help us make both read naturally, not like machine translation.', cta: 'Offer to help translate', href: mailto('Help translate') },
+      { id: 'test', title: 'Test new versions', text: 'Try new versions before they are released to everyone, then tell us if anything seems off.', cta: 'Sign up as a tester', href: mailto('I’d like to be a tester') },
+      { id: 'code', title: 'Contribute code', text: 'All our code is on GitHub under the Apache-2.0 license. Pick an issue, discuss your plan, then send a pull request.', cta: 'See the organization on GitHub', href: site.github, extra: { text: 'Read the contribution guidelines', href: '#guidelines' } },
+    ],
+    guideTitle: 'Contribution guidelines',
+    guide: [
+      'Start with an issue. Write down what you’d like to change and why first, so no work is done twice.',
+      'Keep changes small and focused: one thing per pull request.',
+      'Explain how to test your change.',
+      'By sending a contribution, you agree that it is licensed under Apache-2.0, the same as the project.',
+      'Be kind and patient. We are all learning.',
+    ],
+    guideMore: 'Questions about the license or security?',
+    guideLink: 'Read the open source page',
+  },
+}[lang];
+const guideId = lang === 'id' ? 'panduan' : 'guidelines';
+---
+<Base title={copy.title} description={copy.description}>
+  <div class="wrap page">
+    <header class="page-head">
+      <h1>{copy.h1}</h1>
+      <p class="lede">{copy.lede}</p>
+    </header>
+
+    <section class="section">
+      <header><h2>{copy.whyTitle}</h2></header>
+      <div class="prose">
+        {copy.why.map((p) => <p>{p}</p>)}
+      </div>
+      <p class="notice">{copy.honest}</p>
+    </section>
+
+    <section class="section">
+      <header>
+        <h2>{copy.waysTitle}</h2>
+        <p>{copy.waysText}</p>
+      </header>
+      <ol class="ways">
+        {copy.ways.map((way) => (
+          <li id={way.id}>
+            <h3>{way.title}</h3>
+            <p class="muted">{way.text}</p>
+            <div class="next">
+              {way.issues && reposWithIssues.map((tool) => (
+                <a class="arrow" href={`${tool.repository}/issues/new`}>{copy.issuesFor} {tool.name}</a>
+              ))}
+              <a class="arrow" href={way.href}>{way.cta}</a>
+              {way.extra && <a class="arrow" href={way.extra.href}>{way.extra.text}</a>}
+            </div>
+            {way.issues && reposWithIssues.length > 0 && <p class="small muted">{copy.noGithub}</p>}
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="section" id={guideId}>
+      <header><h2>{copy.guideTitle}</h2></header>
+      <ol class="prose">
+        {copy.guide.map((g) => <li>{g}</li>)}
+      </ol>
+      <p class="small muted">{copy.guideMore} <a href={l('/open-source/')}>{copy.guideLink}</a></p>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .ways { list-style: none; padding: 0; display: grid; gap: 0; max-width: 820px; }
+  .ways > li { display: grid; gap: 8px; padding-block: 22px; border-bottom: 1px solid var(--rule); scroll-margin-top: 16px; }
+  .ways > li:first-child { padding-top: 4px; }
+  .next { display: flex; flex-wrap: wrap; gap: 6px 22px; margin-top: 4px; }
+  #panduan, #guidelines { scroll-margin-top: 16px; }
+</style>

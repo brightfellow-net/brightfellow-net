@@ -1,0 +1,64 @@
+---
+import Wordmark from './Wordmark.astro';
+import { ui, localize, stripLang, footerNav, type Lang } from '../i18n/ui';
+import { getCatalog } from '../data/catalog';
+import { site } from '../site';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = ui[lang];
+const other: Lang = lang === 'id' ? 'en' : 'id';
+const catalog = await getCatalog();
+---
+<footer class="site-footer">
+  <div class="wrap inner">
+    <div class="brand">
+      <Wordmark class="logo" />
+      <p class="muted">{t.footerTagline}</p>
+    </div>
+    <nav class="cols" aria-label="Footer">
+      <div>
+        <h2>{t.tools}</h2>
+        <ul>
+          {catalog.map(({ category }) => (
+            <li><a href={localize(lang, `/for/${category.slug}/`)}>{category.name[lang]}</a></li>
+          ))}
+          <li><a href={localize(lang, '/tools/')}>{t.allTools}</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>{t.footerAbout}</h2>
+        <ul>
+          {footerNav.map((item) => (
+            <li><a href={localize(lang, item.path)}>{t[item.key]}</a></li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <h2>GitHub</h2>
+        <ul>
+          <li><a href={site.github}>github.com/brightfellow-net</a></li>
+          <li><a href={localize(other, stripLang(Astro.url.pathname))} hreflang={other} lang={other}>{t.otherLang}</a></li>
+        </ul>
+      </div>
+    </nav>
+    <p class="fine muted">{t.footerLicense}</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer { border-top: 1px solid var(--rule); background: var(--surface); padding-block: 40px 48px; font-size: 16px; }
+  .inner { display: grid; gap: 32px; }
+  .brand { display: grid; gap: 10px; }
+  .brand :global(.logo) { font-size: 24px; justify-self: start; }
+  .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 28px; }
+  h2 { font-size: 15px; font-family: var(--sans); color: var(--muted); font-weight: 600; margin-bottom: 8px; }
+  ul { list-style: none; padding: 0; display: grid; gap: 6px; }
+  a { color: var(--ink); text-decoration-color: var(--rule); }
+  a:hover { text-decoration-color: currentColor; }
+  .fine { font-size: 14px; border-top: 1px solid var(--rule); padding-top: 20px; }
+  @media (min-width: 900px) {
+    .inner { grid-template-columns: 1fr 2fr; }
+    .fine { grid-column: 1 / -1; }
+  }
+</style>

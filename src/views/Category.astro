@@ -1,0 +1,58 @@
+---
+import Base from '../layouts/Base.astro';
+import ToolList from '../components/ToolList.astro';
+import { localize, ui, type Lang } from '../i18n/ui';
+import { getTools, type Category } from '../data/catalog';
+
+interface Props { lang: Lang; category: Category }
+const { lang, category } = Astro.props;
+const t = ui[lang];
+const tools = (await getTools()).filter((tool) => tool.categories.includes(category.slug));
+const name = category.name[lang];
+
+const copy = {
+  id: {
+    title: `Untuk ${name.toLowerCase()}`,
+    listTitle: 'Alat yang tersedia',
+    askTitle: 'Punya kebutuhan yang belum ada alatnya?',
+    askText: 'Ceritakan pekerjaan yang ingin Anda permudah. Alat berikutnya dibuat dari kebutuhan nyata seperti itu.',
+    all: 'Lihat semua alat',
+  },
+  en: {
+    title: `For ${name.toLowerCase()}`,
+    listTitle: 'Tools',
+    askTitle: 'Need something that doesn’t exist yet?',
+    askText: 'Tell us which work you’d like to make easier. The next tools come from real needs like that.',
+    all: 'See all tools',
+  },
+}[lang];
+---
+<Base title={copy.title} description={category.summary[lang]}>
+  <div class="wrap page">
+    <header class="page-head">
+      <p class="crumbs"><a href={localize(lang, '/tools/')}>{t.tools}</a> / {name}</p>
+      <h1>{copy.title}</h1>
+      {category.intro[lang].map((p, i) => <p class={i === 0 ? 'lede' : 'intro'}>{p}</p>)}
+    </header>
+
+    <section class="section">
+      <header><h2>{copy.listTitle}</h2></header>
+      <ToolList tools={tools} lang={lang} />
+    </section>
+
+    <section class="section">
+      <header>
+        <h2>{copy.askTitle}</h2>
+        <p>{copy.askText}</p>
+      </header>
+      <div class="actions">
+        <a class="btn" href={localize(lang, '/contact/')}>{t.contactUs}</a>
+        <a class="arrow" href={localize(lang, '/tools/')}>{copy.all}</a>
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .intro { max-width: var(--measure); }
+</style>

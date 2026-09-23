@@ -1,0 +1,38 @@
+[
+  {
+    "slug": "churches",
+    "name": { "id": "Gereja", "en": "Churches" },
+    "summary": {
+      "id": "Untuk tim gereja kecil yang ingin bekerja bersama dengan lebih mudah.",
+      "en": "For small church teams who want to work together more easily."
+    },
+    "intro": {
+      "id": [
+        "Di banyak gereja kecil, setiap minggu ada tata ibadah yang harus disusun, warta jemaat yang harus disiapkan, dan slide yang harus siap sebelum ibadah dimulai. Semuanya dikerjakan tim kecil, sering oleh relawan, di sela pekerjaan dan pelayanan yang lain.",
+        "Brightfellow membuat alat sederhana untuk membantu pekerjaan itu. Gratis, terbuka, dan dibuat bersama gereja-gereja yang memakainya."
+      ],
+      "en": [
+        "In many small churches, every week there is an order of service to prepare, a bulletin to put together, and slides to get ready before the service begins. A small team does all of it, often volunteers, alongside their other work and ministry.",
+        "Brightfellow makes simple tools to help with that work. They are free, open, and built together with the churches that use them."
+      ]
+    }
+  },
+  {
+    "slug": "communities",
+    "name": { "id": "Komunitas", "en": "Communities" },
+    "summary": {
+      "id": "Untuk kelompok, perkumpulan, dan organisasi kecil.",
+      "en": "For groups, associations, and small organizations."
+    },
+    "intro": {
+      "id": [
+        "Kelompok, perkumpulan, dan organisasi kecil sering berjalan berkat beberapa orang yang peduli. Mereka butuh alat yang mudah dipakai, tidak mahal, dan datanya tetap di tangan sendiri.",
+        "Alat-alat di bawah ini gratis, open-source, dan bisa dijalankan sendiri."
+      ],
+      "en": [
+        "Groups, associations, and small organizations often run on the goodwill of a few people who care. They need tools that are easy to use, affordable, and keep their data in their own hands.",
+        "The tools below are free, open source, and can be run on your own."
+      ]
+    }
+  }
+]

@@ -1,0 +1,15 @@
+---
+import Mark from './Mark.astro';
+import { ui, type Lang } from '../i18n/ui';
+import type { Tool } from '../data/catalog';
+
+interface Props { status: Tool['status']; lang: Lang }
+const { status, lang } = Astro.props;
+const variant = { available: 'full', pilot: 'half', 'coming-soon': 'empty' } as const;
+---
+<span class="status"><Mark variant={variant[status]} />{ui[lang].status[status]}</span>
+
+<style>
+  .status { display: inline-flex; align-items: center; gap: 7px; font-size: 15px; white-space: nowrap; color: var(--ink); }
+  .status :global(.mark) { width: 22px; height: 14px; }
+</style>

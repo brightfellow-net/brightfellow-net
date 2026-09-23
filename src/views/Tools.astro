@@ -1,0 +1,55 @@
+---
+import Base from '../layouts/Base.astro';
+import ToolList from '../components/ToolList.astro';
+import StatusLabel from '../components/StatusLabel.astro';
+import { localize, type Lang } from '../i18n/ui';
+import { getCatalog } from '../data/catalog';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const catalog = await getCatalog();
+
+const copy = {
+  id: {
+    title: 'Semua alat',
+    description: 'Semua alat Brightfellow: gratis, open-source, dan bisa dijalankan sendiri. Dikelompokkan menurut siapa yang memakainya.',
+    lede: 'Setiap alat gratis dan open-source. Alat dikelompokkan menurut siapa yang memakainya, jadi satu alat bisa muncul di lebih dari satu kelompok.',
+    legend: 'Arti status',
+    see: 'Tentang alat untuk',
+  },
+  en: {
+    title: 'All tools',
+    description: 'Every Brightfellow tool: free, open source, and yours to run. Grouped by who uses them.',
+    lede: 'Every tool is free and open source. Tools are grouped by who uses them, so a tool can appear in more than one group.',
+    legend: 'What the statuses mean',
+    see: 'About tools for',
+  },
+}[lang];
+---
+<Base title={copy.title} description={copy.description}>
+  <div class="wrap page">
+    <header class="page-head">
+      <h1>{copy.title}</h1>
+      <p class="lede">{copy.lede}</p>
+      <div class="legend" role="group" aria-label={copy.legend}>
+        <StatusLabel status="available" lang={lang} />
+        <StatusLabel status="pilot" lang={lang} />
+        <StatusLabel status="coming-soon" lang={lang} />
+      </div>
+    </header>
+
+    {catalog.map(({ category, tools }) => (
+      <section class="section" id={category.slug}>
+        <header>
+          <h2>{category.name[lang]}</h2>
+          <p>{category.summary[lang]} <a href={localize(lang, `/for/${category.slug}/`)}>{copy.see} {category.name[lang].toLowerCase()}</a></p>
+        </header>
+        <ToolList tools={tools} lang={lang} />
+      </section>
+    ))}
+  </div>
+</Base>
+
+<style>
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 22px; }
+</style>

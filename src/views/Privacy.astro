@@ -1,0 +1,61 @@
+---
+import Base from '../layouts/Base.astro';
+import { type Lang } from '../i18n/ui';
+import { site, mailto } from '../site';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+
+const copy = {
+  id: {
+    title: 'Privasi',
+    description: 'Draf kebijakan privasi Brightfellow. Belum final.',
+    draft: 'Draf. Halaman ini belum final dan belum berisi komitmen hukum. Isinya akan dilengkapi.',
+    sections: [
+      { title: 'Situs ini', text: 'Situs brightfellow.net tidak memakai pelacak, cookie, atau skrip pihak ketiga.' },
+      { title: 'Data yang disimpan oleh layanan yang kami kelola', text: 'Sesedikit mungkin: nama dan peran pengguna. Rincian akan ditulis di sini.' },
+      { title: 'Lokasi server', text: 'Akan ditulis di sini.' },
+      { title: 'Ekspor dan penghapusan data', text: 'Akan ditulis di sini.' },
+    ],
+    contact: 'Kontak',
+    contactText: 'Pertanyaan tentang privasi? Kirim email ke',
+  },
+  en: {
+    title: 'Privacy',
+    description: 'Draft of Brightfellow’s privacy policy. Not final.',
+    draft: 'Draft. This page is not final and makes no legal commitments yet. It will be completed later.',
+    sections: [
+      { title: 'This site', text: 'brightfellow.net uses no trackers, no cookies, and no third-party scripts.' },
+      { title: 'What data the hosted service stores', text: 'As little as possible: users’ names and roles. Details will be written here.' },
+      { title: 'Where it’s hosted', text: 'To be written here.' },
+      { title: 'Data export and deletion', text: 'To be written here.' },
+    ],
+    contact: 'Contact',
+    contactText: 'Questions about privacy? Email',
+  },
+}[lang];
+---
+<Base title={copy.title} description={copy.description}>
+  <div class="wrap page">
+    <header class="page-head">
+      <h1>{copy.title}</h1>
+      <p class="notice" role="note">{copy.draft}</p>
+    </header>
+
+    {copy.sections.map((s) => (
+      <section class="section">
+        <header>
+          <h2>{s.title}</h2>
+          <p>{s.text}</p>
+        </header>
+      </section>
+    ))}
+
+    <section class="section">
+      <header>
+        <h2>{copy.contact}</h2>
+        <p>{copy.contactText} <a href={mailto(lang === 'id' ? 'Privasi' : 'Privacy')}>{site.email}</a>.</p>
+      </header>
+    </section>
+  </div>
+</Base>
