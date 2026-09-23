@@ -1,11 +1,9 @@
-# Type-checks and builds the site on every pull request and push to main.
-# Deploys are handled by Cloudflare's Git integration, not by this workflow.
+# Type-checks and builds the site on every pull request.
+# Pushes to main are checked and deployed by deploy.yml.
 name: Check
 
 on:
   pull_request:
-  push:
-    branches: [main]
 
 permissions:
   contents: read

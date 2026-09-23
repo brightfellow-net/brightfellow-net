@@ -24,57 +24,61 @@ npm run preview   # serve dist/ locally
 
 ## Deploy
 
-The site is hosted on **Cloudflare Pages**, connected to this repository:
+The site is hosted on **GitHub Pages**, deployed by GitHub Actions:
 
-- A push to `main` builds and deploys to https://brightfellow.net.
-- Every pull request gets its own preview URL, which Cloudflare posts on the PR.
-- `.github/workflows/check.yml` runs `npm run check` and `npm run build` on every
-  pull request and every push to `main`. Deploying is left entirely to Cloudflare.
+- `.github/workflows/deploy.yml`: on every push to `main`, runs `npm run check`
+  and `npm run build`, then publishes `dist/` to https://brightfellow.net. It can
+  also be run by hand from the **Actions** tab ("Run workflow").
+- `.github/workflows/check.yml`: on every pull request, runs the same check and
+  build, so problems show up before merging.
 
-`npm run build` writes a plain static site to `dist/`, with `dist/404.html` for
-missing pages. The site expects to live at the apex domain (`site` in
-`astro.config.mjs`). Hosted tool instances will live on their own subdomains and
-are not part of this build.
+Both use the Node.js version in `.node-version`. `npm run build` writes a plain
+static site to `dist/`, and GitHub Pages serves `dist/404.html` for missing pages.
+The site expects to live at the apex domain (`site` in `astro.config.mjs`).
+Hosted tool instances will live on their own subdomains and are not part of this
+build.
 
-### One-time Cloudflare setup
+### One-time GitHub Pages setup
 
-1. In the Cloudflare dashboard, go to **Workers & Pages**, create a new
-   application, choose **Pages**, then **Import an existing Git repository**.
-2. Connect GitHub. An owner of the `brightfellow-net` organization has to
-   approve the Cloudflare app; give it access to **this repository only**.
-3. Select `brightfellow-net/brightfellow-net` and use these build settings:
+1. **Turn on Pages.** In the repository, go to **Settings → Pages** and set
+   **Source** to **GitHub Actions**.
+2. **Verify the domain for the organization** (recommended; it stops anyone else
+   from using the domain on GitHub). Go to the organization's **Settings → Pages
+   → Add a domain**, enter `brightfellow.net`, and add the TXT record GitHub shows
+   at your DNS provider.
+3. **Point DNS at GitHub.** At your DNS provider, add these records for the apex
+   domain `brightfellow.net`:
 
-   | Setting | Value |
+   | Type | Value |
    |---|---|
-   | Production branch | `main` |
-   | Framework preset | Astro |
-   | Build command | `npm run build` |
-   | Build output directory | `dist` |
-   | Root directory | *(leave empty)* |
+   | A | `185.199.108.153` |
+   | A | `185.199.109.153` |
+   | A | `185.199.110.153` |
+   | A | `185.199.111.153` |
+   | AAAA | `2606:50c0:8000::153` |
+   | AAAA | `2606:50c0:8001::153` |
+   | AAAA | `2606:50c0:8002::153` |
+   | AAAA | `2606:50c0:8003::153` |
 
-   The Node.js version comes from `.node-version` (22), so no environment
-   variable is needed.
-4. After the first deploy, open the project's **Custom domains** tab and add
-   `brightfellow.net`. If the domain's DNS is on Cloudflare, the record is
-   created for you; otherwise, add the CNAME record Cloudflare shows at your DNS
-   provider.
-
-Free-plan limits (500 builds a month, one build at a time) are far above what
-this site needs.
+   Optionally add a `CNAME` record for `www` pointing to
+   `brightfellow-net.github.io`, so `www.brightfellow.net` redirects to the apex.
+4. **Set the custom domain.** In **Settings → Pages → Custom domain**, enter
+   `brightfellow.net` and save. When the DNS check passes, tick **Enforce HTTPS**
+   (the certificate can take a little while to be issued). No `CNAME` file is
+   needed in the repository when deploying with Actions.
+5. **Deploy.** Merge to `main` (or run the Deploy workflow by hand).
 
 ### Recommended: protect `main`
 
 In GitHub, go to **Settings → Branches** (or **Rules**) and add a rule for `main`
-that requires the **Check** status to pass before merging. Broken builds then
+that requires the **Check** status to pass before merging, so broken builds
 can't reach the live site.
 
-### Alternative: GitHub Pages
+### Costs
 
-The repository is public, so GitHub Pages also works on the free plan. You'd add
-`public/CNAME` containing `brightfellow.net`, set **Settings → Pages → Source**
-to "GitHub Actions", and add a deploy workflow (for example with
-[`withastro/action`](https://github.com/withastro/action)). There are no
-per-PR previews, and it is usually slower for visitors in Indonesia.
+The repository is public, so GitHub Pages and the Actions minutes used by these
+workflows are free. (For a private repository on the free organization plan,
+GitHub Pages isn't available.)
 
 ## How the site is organized
 
