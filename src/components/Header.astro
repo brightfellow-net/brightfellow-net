@@ -1,0 +1,211 @@
+---
+import Wordmark from './Wordmark.astro';
+import { ui, localize, stripLang, primaryNav, langs, langMeta, type Lang } from '../i18n/ui';
+import { getCatalog } from '../data/catalog';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = ui[lang];
+const current = stripLang(Astro.url.pathname);
+const catalog = await getCatalog();
+const isCurrent = (path: string) => current === path || (path !== '/' && current.startsWith(path));
+---
+<header class="site-header">
+  <div class="wrap bar">
+    <Wordmark href={localize(lang, '/')} label={`Brightfellow, ${t.home.toLowerCase()}`} class="logo" />
+    <button class="toggle" type="button" aria-expanded="false" aria-controls="site-nav" hidden>{t.menu}</button>
+    <nav id="site-nav" class="nav" aria-label={t.nav}>
+      <ul class="nav-list">
+        <li class="tools-item">
+          <details class="tools-menu">
+            <summary aria-current={isCurrent('/tools/') || isCurrent('/for/') ? 'page' : undefined}>{t.tools}</summary>
+            <div class="panel">
+              {catalog.map(({ category, tools }) => (
+                <div class="group">
+                  <a class="group-name" href={localize(lang, `/for/${category.slug}/`)}>{category.name[lang]}</a>
+                  <ul>
+                    {tools.map((tool) => (
+                      <li><a href={localize(lang, `/tools/${tool.slug}/`)}>{tool.name}</a></li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+              <a class="all arrow" href={localize(lang, '/tools/')}>{t.allTools}</a>
+            </div>
+          </details>
+        </li>
+        {primaryNav.map((item) => (
+          <li><a href={localize(lang, item.path)} aria-current={isCurrent(item.path) ? 'page' : undefined}>{t[item.key]}</a></li>
+        ))}
+      </ul>
+      <details class="lang-menu">
+        <summary title={t.language}>
+          <span class="visually-hidden">{t.language}: {langMeta[lang].name}</span>
+          <span aria-hidden="true">{langMeta[lang].short}</span>
+        </summary>
+        <ul class="panel lang-list">
+          {langs.map((l) => (
+            <li>
+              <a href={localize(l, current)} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined}>
+                <span class="code" aria-hidden="true">{langMeta[l].short}</span>
+                <span>{langMeta[l].name}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </details>
+    </nav>
+    <button class="theme" type="button" hidden data-to-dark={t.toDark} data-to-light={t.toLight}>
+      <svg class="moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <svg class="sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<script>
+  // Theme button: switches between light and dark. Choosing the theme the OS
+  // already uses clears the saved choice, so the site follows the OS again.
+  const themeBtn = document.querySelector<HTMLButtonElement>('.site-header .theme');
+  if (themeBtn) {
+    const root = document.documentElement;
+    const osDark = matchMedia('(prefers-color-scheme: dark)');
+    const effective = () => root.dataset.theme ?? (osDark.matches ? 'dark' : 'light');
+    const render = () => {
+      const label = effective() === 'dark' ? themeBtn.dataset.toLight! : themeBtn.dataset.toDark!;
+      themeBtn.setAttribute('aria-label', label);
+      themeBtn.title = label;
+      themeBtn.dataset.current = effective();
+    };
+    themeBtn.addEventListener('click', () => {
+      const next = effective() === 'dark' ? 'light' : 'dark';
+      const followsOs = next === (osDark.matches ? 'dark' : 'light');
+      try {
+        if (followsOs) localStorage.removeItem('theme');
+        else localStorage.setItem('theme', next);
+      } catch {}
+      if (followsOs) delete root.dataset.theme;
+      else root.dataset.theme = next;
+      render();
+    });
+    osDark.addEventListener('change', render);
+    themeBtn.hidden = false;
+    render();
+  }
+
+  const header = document.querySelector<HTMLElement>('.site-header');
+  const toggle = header?.querySelector<HTMLButtonElement>('.toggle');
+  const nav = header?.querySelector<HTMLElement>('.nav');
+  const menus = [...(header?.querySelectorAll<HTMLDetailsElement>('details') ?? [])];
+  if (header && toggle && nav) {
+    header.classList.add('js');
+    toggle.hidden = false;
+    const labels = { open: toggle.textContent, close: document.documentElement.lang === 'en' ? 'Close' : 'Tutup' };
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.textContent = open ? labels.close : labels.open;
+      nav.classList.toggle('open', open);
+    };
+    toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+    // Dropdowns (Tools, language): only one open at a time; close on outside click or Escape.
+    menus.forEach((menu) => menu.addEventListener('toggle', () => {
+      if (menu.open) menus.forEach((m) => { if (m !== menu) m.open = false; });
+    }));
+    document.addEventListener('click', (e) => {
+      menus.forEach((m) => { if (m.open && !m.contains(e.target as Node)) m.open = false; });
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      const open = menus.find((m) => m.open);
+      if (open) { open.open = false; open.querySelector('summary')?.focus(); }
+      else if (nav.classList.contains('open')) { setOpen(false); toggle.focus(); }
+    });
+  }
+</script>
+
+<style>
+  .site-header { border-bottom: 1px solid var(--rule); background: var(--paper); }
+  .bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; padding-block: 14px; }
+  .bar :global(.logo) { font-size: 26px; padding-block: 4px; }
+
+  .toggle {
+    font: inherit; font-size: 16px; font-weight: 600;
+    color: var(--ink); background: transparent;
+    border: 1px solid var(--rule); border-radius: 6px;
+    padding: 7px 14px; cursor: pointer;
+  }
+
+  .theme {
+    display: inline-grid; place-items: center;
+    width: 40px; height: 40px; padding: 0;
+    color: var(--ink); background: transparent;
+    border: 1px solid var(--rule); border-radius: 6px; cursor: pointer;
+  }
+  .theme[hidden] { display: none; }
+  .theme svg { width: 20px; height: 20px; grid-area: 1 / 1; }
+  .theme .sun, .theme[data-current="dark"] .moon { display: none; }
+  .theme[data-current="dark"] .sun { display: block; }
+
+  /* Small screens: logo, then theme + Menu at the right, then the nav below. */
+  .theme { order: 1; margin-left: auto; }
+  .toggle { order: 2; }
+  .nav { order: 3; }
+
+  .nav { flex-basis: 100%; display: grid; gap: 16px; padding-block: 8px 12px; }
+  .nav-list { list-style: none; padding: 0; display: grid; gap: 4px; }
+  .nav a, summary { color: var(--ink); text-decoration: none; font-size: 17px; }
+  .nav-list > li > a, summary { display: block; padding: 8px 0; }
+  .nav a:hover { text-decoration: underline; }
+  [aria-current="page"] { text-decoration: underline; text-decoration-color: var(--lamp); text-decoration-thickness: 3px; text-underline-offset: 6px; }
+
+  summary { cursor: pointer; list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: ""; display: inline-block; width: 7px; height: 7px; margin-left: 8px; border: solid currentColor; border-width: 0 1.5px 1.5px 0; transform: translateY(-3px) rotate(45deg); }
+  details[open] summary::after { transform: translateY(1px) rotate(-135deg); }
+
+  .panel { display: grid; gap: 16px; padding: 4px 0 12px 16px; border-left: 2px solid var(--rule); }
+  .group { display: grid; gap: 4px; }
+  .nav .group-name { font-size: 14px; color: var(--muted); }
+  .group ul { list-style: none; padding: 0; display: grid; gap: 2px; }
+  .group li a { display: block; padding: 4px 0; font-family: var(--serif); font-weight: 600; }
+  .nav .all { color: var(--link); font-size: 16px; }
+
+  /* Language dropdown */
+  .lang-menu { position: relative; justify-self: start; }
+  .lang-menu summary {
+    display: inline-flex; align-items: center;
+    font-size: 15px; font-weight: 600; color: var(--ink);
+    border: 1px solid var(--rule); border-radius: 6px; padding: 7px 12px;
+  }
+  .lang-list { list-style: none; gap: 2px; margin: 8px 0 0; }
+  .nav .lang-list a { display: flex; align-items: baseline; gap: 12px; padding: 7px 0; font-size: 16px; white-space: nowrap; }
+  .lang-list .code { width: 22px; font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: 0.04em; }
+  .lang-list a[aria-current="true"] { text-decoration: none; font-weight: 600; }
+  .lang-list a[aria-current="true"]::after {
+    content: ""; width: 5px; height: 10px; margin-left: auto;
+    border: solid var(--link); border-width: 0 2px 2px 0;
+    transform: translateY(-2px) rotate(45deg);
+  }
+
+  /* With JS on small screens, the nav collapses behind the Menu button. */
+  .js .nav { display: none; }
+  .js .nav.open { display: grid; }
+
+  @media (min-width: 900px) {
+    .toggle { display: none; }
+    .nav { order: 1; margin-left: auto; }
+    .theme { order: 2; margin-left: 0; }
+    .nav, .js .nav, .js .nav.open { display: flex; flex-basis: auto; align-items: center; gap: 28px; padding: 0; }
+    .nav-list { display: flex; align-items: center; gap: 24px; }
+    .nav-list > li > a, summary { padding: 6px 0; }
+    .tools-item { position: relative; }
+    .lang-menu summary { padding: 7px 12px; }
+
+    .panel {
+      position: absolute; top: calc(100% + 12px); left: -20px; z-index: 5;
+      min-width: 260px; padding: 18px 20px;
+      background: var(--paper); border: 1px solid var(--rule); border-radius: 8px;
+      box-shadow: 0 10px 30px -12px rgb(0 0 0 / 0.25);
+    }
+    .lang-menu .lang-list { margin: 0; min-width: 240px; padding: 8px 16px; left: auto; right: 0; }
+  }
+</style>

@@ -1,0 +1,30 @@
+---
+/**
+ * The "two lights" mark: two circles, brighter where they overlap.
+ * variant: "full" (two lights), "half" (one light, one outline), "empty" (two outlines).
+ */
+interface Props { variant?: 'full' | 'half' | 'empty'; class?: string }
+const { variant = 'full', class: className } = Astro.props;
+const lens = 'M16 3.755A8 8 0 0 1 16 16.245A8 8 0 0 1 16 3.755Z';
+---
+<svg class:list={['mark', className]} viewBox="0 0 32 20" aria-hidden="true" focusable="false">
+  {variant === 'full' && (
+    <>
+      <circle cx="11" cy="10" r="8" fill="var(--lamp)" />
+      <circle cx="21" cy="10" r="8" fill="var(--lamp)" />
+      <path d={lens} fill="var(--lamp-hi)" />
+    </>
+  )}
+  {variant === 'half' && (
+    <>
+      <circle cx="21" cy="10" r="7.25" fill="none" stroke="var(--muted)" stroke-width="1.5" />
+      <circle cx="11" cy="10" r="8" fill="var(--lamp)" />
+    </>
+  )}
+  {variant === 'empty' && (
+    <>
+      <circle cx="11" cy="10" r="7.25" fill="none" stroke="var(--muted)" stroke-width="1.5" />
+      <circle cx="21" cy="10" r="7.25" fill="none" stroke="var(--muted)" stroke-width="1.5" />
+    </>
+  )}
+</svg>

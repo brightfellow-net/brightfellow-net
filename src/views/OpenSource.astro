@@ -1,0 +1,118 @@
+---
+import Base from '../layouts/Base.astro';
+import Mark from '../components/Mark.astro';
+import { type Lang } from '../i18n/ui';
+import { getTools } from '../data/catalog';
+import { site, mailto } from '../site';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const repos = (await getTools()).filter((tool) => tool.repository);
+
+const copy = {
+  id: {
+    title: 'Open source dan keamanan',
+    description: 'Kode Brightfellow terbuka dengan lisensi Apache-2.0. Apa artinya bagi Anda, dan cara melaporkan masalah keamanan.',
+    lede: 'Semua alat Brightfellow dibuat terbuka. Anda bisa melihat kodenya, memeriksanya, dan menjalankannya sendiri.',
+    codeTitle: 'Kodenya ada di GitHub',
+    codeText: 'Semua repositori publik kami ada di organisasi brightfellow-net.',
+    licenseTitle: 'Lisensi Apache-2.0, dalam bahasa sehari-hari',
+    license: [
+      'Anda boleh memakai, menyalin, mengubah, dan menjalankan alat ini sendiri, gratis, termasuk untuk keperluan komersial.',
+      'Anda boleh membagikan versi yang sudah Anda ubah.',
+      'Jika membagikan ulang, sertakan salinan lisensi, pemberitahuan hak cipta, dan berkas NOTICE, lalu tandai berkas yang Anda ubah.',
+      'Setiap kontributor memberikan lisensi paten atas kontribusinya kepada semua pengguna.',
+      'Perangkat lunak diberikan apa adanya, tanpa jaminan.',
+    ],
+    licenseNote: 'Ringkasan ini bukan pengganti teks lisensi.',
+    licenseLink: 'Baca teks lengkap Apache-2.0',
+    secId: 'keamanan',
+    secTitle: 'Melaporkan masalah keamanan',
+    sec: [
+      'Jika Anda menemukan celah keamanan, mohon jangan membukanya sebagai issue publik di GitHub.',
+      'Kirim email berisi penjelasan masalahnya dan langkah untuk memunculkannya. Kami akan membalas dan mengabari perkembangannya.',
+    ],
+    secCta: 'Laporkan masalah keamanan',
+    siteTitle: 'Tentang situs ini',
+    siteText: 'Situs ini tidak memakai pelacak, cookie, atau skrip pihak ketiga. Kodenya juga open-source dengan lisensi Apache-2.0.',
+    siteLink: 'Lihat kode situs ini',
+  },
+  en: {
+    title: 'Open source and security',
+    description: 'Brightfellow’s code is open under the Apache-2.0 license. What that means for you, and how to report security issues.',
+    lede: 'Every Brightfellow tool is built in the open. You can read the code, check it, and run it yourself.',
+    codeTitle: 'The code is on GitHub',
+    codeText: 'All our public repositories are in the brightfellow-net organization.',
+    licenseTitle: 'The Apache-2.0 license, in plain words',
+    license: [
+      'You may use, copy, change, and run these tools yourself, for free, including for commercial use.',
+      'You may share versions you have changed.',
+      'If you redistribute, include a copy of the license, the copyright notices, and the NOTICE file, and mark the files you changed.',
+      'Every contributor grants all users a patent license for their contributions.',
+      'The software is provided as is, without warranty.',
+    ],
+    licenseNote: 'This summary is not a substitute for the license text.',
+    licenseLink: 'Read the full Apache-2.0 text',
+    secId: 'security',
+    secTitle: 'Reporting security issues',
+    sec: [
+      'If you find a security vulnerability, please don’t open a public issue on GitHub.',
+      'Send an email explaining the problem and the steps to reproduce it. We’ll reply and keep you updated.',
+    ],
+    secCta: 'Report a security issue',
+    siteTitle: 'About this site',
+    siteText: 'This site uses no trackers, no cookies, and no third-party scripts. Its code is also open source under the Apache-2.0 license.',
+    siteLink: 'See the code for this site',
+  },
+}[lang];
+---
+<Base title={copy.title} description={copy.description}>
+  <div class="wrap page">
+    <header class="page-head">
+      <h1>{copy.title}</h1>
+      <p class="lede">{copy.lede}</p>
+    </header>
+
+    <section class="section">
+      <header>
+        <h2>{copy.codeTitle}</h2>
+        <p>{copy.codeText}</p>
+      </header>
+      <ul class="repos">
+        <li><a href={site.github}>github.com/brightfellow-net</a></li>
+        {repos.map((tool) => <li><a href={tool.repository}>{tool.repository!.replace('https://', '')}</a></li>)}
+        <li><a href={site.repo}>{site.repo.replace('https://', '')}</a></li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <header><h2>{copy.licenseTitle}</h2></header>
+      <ul class="lit prose">
+        {copy.license.map((item) => <li><Mark /><span>{item}</span></li>)}
+      </ul>
+      <p class="small muted">{copy.licenseNote} <a href="https://www.apache.org/licenses/LICENSE-2.0">{copy.licenseLink}</a></p>
+    </section>
+
+    <section class="section" id={copy.secId}>
+      <header><h2>{copy.secTitle}</h2></header>
+      <div class="prose">{copy.sec.map((p) => <p>{p}</p>)}</div>
+      <div class="actions">
+        <a class="btn" href={mailto(lang === 'id' ? 'Keamanan' : 'Security')}>{copy.secCta}</a>
+        <span class="small muted">{site.email}</span>
+      </div>
+    </section>
+
+    <section class="section">
+      <header>
+        <h2>{copy.siteTitle}</h2>
+        <p>{copy.siteText}</p>
+      </header>
+      <a class="arrow" href={site.repo}>{copy.siteLink}</a>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .repos { list-style: none; padding: 0; display: grid; gap: 6px; font-family: var(--mono); font-size: 15px; }
+  #keamanan, #security { scroll-margin-top: 16px; }
+</style>

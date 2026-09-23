@@ -1,0 +1,35 @@
+---
+import StatusLabel from './StatusLabel.astro';
+import { localize, type Lang } from '../i18n/ui';
+import type { Tool } from '../data/catalog';
+
+interface Props { tools: Tool[]; lang: Lang; headingLevel?: 'h2' | 'h3' }
+const { tools, lang, headingLevel = 'h3' } = Astro.props;
+const H = headingLevel;
+---
+<ul class="tools">
+  {tools.map((tool) => (
+    <li>
+      <H class="name"><a href={localize(lang, `/tools/${tool.slug}/`)}>{tool.name}</a></H>
+      <StatusLabel status={tool.status} lang={lang} />
+      <p class="desc">{tool.description[lang]}</p>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .tools { list-style: none; padding: 0; display: grid; max-width: 760px; }
+  li {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 4px 16px;
+    padding-block: 16px;
+    border-bottom: 1px solid var(--rule);
+  }
+  li:first-child { padding-top: 4px; }
+  .name { font-size: 20px; }
+  .name a { color: var(--ink); text-decoration-color: var(--rule); }
+  .name a:hover { text-decoration-color: currentColor; }
+  .desc { grid-column: 1 / -1; color: var(--muted); }
+</style>

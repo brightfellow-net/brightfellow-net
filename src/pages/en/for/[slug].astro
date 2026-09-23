@@ -1,0 +1,10 @@
+---
+import View from '../../../views/Category.astro';
+import { getCategories, type Category } from '../../../data/catalog';
+
+export async function getStaticPaths() {
+  return (await getCategories()).map((category) => ({ params: { slug: category.slug }, props: { category } }));
+}
+const { category } = Astro.props as { category: Category };
+---
+<View lang="en" category={category} />

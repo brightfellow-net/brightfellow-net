@@ -1,0 +1,24 @@
+[
+  {
+    "slug": "liturgist",
+    "name": "Liturgist app",
+    "description": {
+      "id": "Menyusun tata ibadah mingguan bersama tim, dari draf sampai warta dan slide.",
+      "en": "Prepare the weekly order of service together, from first draft to bulletin and slides."
+    },
+    "categories": ["churches"],
+    "status": "pilot",
+    "repository": null
+  },
+  {
+    "slug": "bibliosphere",
+    "name": "Bibliosphere",
+    "description": {
+      "id": "Sistem perpustakaan yang ringan untuk katalog, anggota, dan peminjaman buku.",
+      "en": "A lightweight library system for your catalog, members, and book loans."
+    },
+    "categories": ["churches", "communities"],
+    "status": "available",
+    "repository": "https://github.com/brightfellow-net/bibliosphere"
+  }
+]

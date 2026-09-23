@@ -1,0 +1,79 @@
+---
+import Base from '../layouts/Base.astro';
+import { localize, type Lang } from '../i18n/ui';
+import { site, mailto } from '../site';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const l = (path: string) => localize(lang, path);
+
+const copy = {
+  id: {
+    title: 'Kontak',
+    h1: 'Hubungi kami',
+    description: 'Hubungi Brightfellow lewat email.',
+    lede: 'Cara termudah menghubungi kami adalah lewat email. Tulis dalam bahasa Indonesia atau Inggris.',
+    send: 'Kirim email',
+    topicsTitle: 'Beberapa hal yang bisa Anda tanyakan',
+    topics: [
+      { text: 'Gereja Anda ingin ikut mencoba Liturgist app', subject: 'Ingin mencoba Liturgist app' },
+      { text: 'Pertanyaan tentang menjalankan alat sendiri', subject: 'Pertanyaan: menjalankan sendiri' },
+      { text: 'Minat pada versi yang kami kelola', subject: 'Versi yang dikelola' },
+      { text: 'Ingin ikut serta di komunitas', subject: 'Ingin ikut serta' },
+    ],
+    otherTitle: 'Tempat lain',
+    other: [
+      { pre: 'Masalah teknis atau usulan fitur:', link: 'cara ikut serta', href: '/community/' },
+      { pre: 'Menemukan celah keamanan:', link: 'laporkan secara pribadi', href: '/open-source/#keamanan' },
+    ],
+  },
+  en: {
+    title: 'Contact',
+    h1: 'Contact us',
+    description: 'Get in touch with Brightfellow by email.',
+    lede: 'The easiest way to reach us is by email. Write in English or Indonesian.',
+    send: 'Send an email',
+    topicsTitle: 'Some things you can write about',
+    topics: [
+      { text: 'Your church would like to try the Liturgist app', subject: 'Trying the Liturgist app' },
+      { text: 'Questions about running a tool yourself', subject: 'Question: running it myself' },
+      { text: 'Interest in the version we run for you', subject: 'Hosted version' },
+      { text: 'Wanting to take part in the community', subject: 'Getting involved' },
+    ],
+    otherTitle: 'Other places',
+    other: [
+      { pre: 'Technical problems or feature ideas:', link: 'ways to take part', href: '/community/' },
+      { pre: 'Found a security vulnerability:', link: 'report it privately', href: '/open-source/#security' },
+    ],
+  },
+}[lang];
+---
+<Base title={copy.title} description={copy.description}>
+  <div class="wrap page">
+    <header class="page-head">
+      <h1>{copy.h1}</h1>
+      <p class="lede">{copy.lede}</p>
+      <p><a class="email" href={mailto()}>{site.email}</a></p>
+      <div class="actions"><a class="btn" href={mailto()}>{copy.send}</a></div>
+    </header>
+
+    <section class="section">
+      <header><h2>{copy.topicsTitle}</h2></header>
+      <ul class="topics">
+        {copy.topics.map((topic) => <li><a class="arrow" href={mailto(topic.subject)}>{topic.text}</a></li>)}
+      </ul>
+    </section>
+
+    <section class="section">
+      <header><h2>{copy.otherTitle}</h2></header>
+      <ul class="topics">
+        {copy.other.map((o) => <li>{o.pre} <a href={l(o.href)}>{o.link}</a></li>)}
+      </ul>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .topics { list-style: none; padding: 0; display: grid; gap: 10px; }
+  .email { text-decoration-thickness: 2px; }
+</style>
