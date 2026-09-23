@@ -1,4 +1,4 @@
-/* Palette A ("warm ember"). Light theme on :root, dark theme follows the OS. */
+/* Palette A ("warm ember"). Light theme on :root. */
 :root {
   --paper: #FBF7F0;
   --surface: #F4EDE2;
@@ -21,8 +21,9 @@
   color-scheme: light;
 }
 
+/* Dark theme: follows the OS unless the visitor picked a theme with the header button. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --paper: #1A1714;
     --surface: #23201C;
     --rule: #3A332C;
@@ -34,6 +35,19 @@
     --lamp-hi: #FFE3A1;
     color-scheme: dark;
   }
+}
+
+:root[data-theme="dark"] {
+  --paper: #1A1714;
+  --surface: #23201C;
+  --rule: #3A332C;
+  --ink: #F1EBE2;
+  --muted: #A89E93;
+  --link: #E8875A;
+  --dusk: #7FB3B8;
+  --lamp: #E9A93F;
+  --lamp-hi: #FFE3A1;
+  color-scheme: dark;
 }
 
 @media (min-width: 720px) {
