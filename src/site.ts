@@ -3,6 +3,7 @@ export const site = {
   url: 'https://brightfellow.net',
   email: 'hutomo@brightfellow.net',
   github: 'https://github.com/brightfellow-net',
+  repo: 'https://github.com/brightfellow-net/brightfellow-net',
 };
 
 export const mailto = (subject?: string) =>

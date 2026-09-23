@@ -38,6 +38,7 @@ const catalog = await getCatalog();
         <h2>GitHub</h2>
         <ul>
           <li><a href={site.github}>github.com/brightfellow-net</a></li>
+          <li><a href={site.repo}>{t.footerSource}</a></li>
           <li><a href={localize(other, stripLang(Astro.url.pathname))} hreflang={other} lang={other}>{t.otherLang}</a></li>
         </ul>
       </div>

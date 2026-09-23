@@ -4,7 +4,7 @@ The landing site for **Brightfellow**, a community that builds and looks after
 simple, open-source tools for communities and small organizations.
 
 It is a static site built with [Astro](https://astro.build). It ships almost no
-JavaScript (only a small script for the mobile menu), uses no trackers or cookies,
+JavaScript (small scripts for the menus and the theme button), uses no trackers or cookies,
 and self-hosts its one web font (Literata). Indonesian is the default language at
 `/`; English lives under `/en/`, with the same English URL slugs.
 
@@ -12,7 +12,7 @@ Licensed under [Apache-2.0](LICENSE). See [NOTICE](NOTICE).
 
 ## Run locally
 
-Requires Node.js 22 or newer.
+Requires Node.js 22.12 or newer (see `.node-version`).
 
 ```bash
 npm install
@@ -24,51 +24,57 @@ npm run preview   # serve dist/ locally
 
 ## Deploy
 
-`npm run build` writes a plain static site to `dist/`. Any static host works. The
-site expects to live at the apex domain (`https://brightfellow.net`, set as `site`
-in `astro.config.mjs`). Hosted tool instances will live on their own subdomains
-and are not part of this build.
+The site is hosted on **Cloudflare Pages**, connected to this repository:
 
-### Cloudflare Pages (recommended)
+- A push to `main` builds and deploys to https://brightfellow.net.
+- Every pull request gets its own preview URL, which Cloudflare posts on the PR.
+- `.github/workflows/check.yml` runs `npm run check` and `npm run build` on every
+  pull request and every push to `main`. Deploying is left entirely to Cloudflare.
 
-1. In Cloudflare Pages, create a project from this GitHub repository.
-2. Build command: `npm run build`. Output directory: `dist`.
-3. Environment variable `NODE_VERSION` = `22` (or newer).
-4. Add `brightfellow.net` as a custom domain.
+`npm run build` writes a plain static site to `dist/`, with `dist/404.html` for
+missing pages. The site expects to live at the apex domain (`site` in
+`astro.config.mjs`). Hosted tool instances will live on their own subdomains and
+are not part of this build.
 
-`dist/404.html` is served automatically for missing pages.
+### One-time Cloudflare setup
 
-### GitHub Pages
+1. In the Cloudflare dashboard, go to **Workers & Pages**, create a new
+   application, choose **Pages**, then **Import an existing Git repository**.
+2. Connect GitHub. An owner of the `brightfellow-net` organization has to
+   approve the Cloudflare app; give it access to **this repository only**.
+3. Select `brightfellow-net/brightfellow-net` and use these build settings:
 
-1. Add `public/CNAME` containing `brightfellow.net`.
-2. In the repository settings, go to Pages and set Source to "GitHub Actions".
-3. Add `.github/workflows/deploy.yml`:
+   | Setting | Value |
+   |---|---|
+   | Production branch | `main` |
+   | Framework preset | Astro |
+   | Build command | `npm run build` |
+   | Build output directory | `dist` |
+   | Root directory | *(leave empty)* |
 
-```yaml
-name: Deploy
-on:
-  push:
-    branches: [main]
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: withastro/action@v3
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
-```
+   The Node.js version comes from `.node-version` (22), so no environment
+   variable is needed.
+4. After the first deploy, open the project's **Custom domains** tab and add
+   `brightfellow.net`. If the domain's DNS is on Cloudflare, the record is
+   created for you; otherwise, add the CNAME record Cloudflare shows at your DNS
+   provider.
+
+Free-plan limits (500 builds a month, one build at a time) are far above what
+this site needs.
+
+### Recommended: protect `main`
+
+In GitHub, go to **Settings → Branches** (or **Rules**) and add a rule for `main`
+that requires the **Check** status to pass before merging. Broken builds then
+can't reach the live site.
+
+### Alternative: GitHub Pages
+
+The repository is public, so GitHub Pages also works on the free plan. You'd add
+`public/CNAME` containing `brightfellow.net`, set **Settings → Pages → Source**
+to "GitHub Actions", and add a deploy workflow (for example with
+[`withastro/action`](https://github.com/withastro/action)). There are no
+per-PR previews, and it is usually slower for visitors in Indonesia.
 
 ## How the site is organized
 
