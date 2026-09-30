@@ -5,8 +5,8 @@ simple, open-source tools for communities and small organizations.
 
 It is a static site built with [Astro](https://astro.build). It ships almost no
 JavaScript (small scripts for the menus and the theme button), uses no trackers or cookies,
-and self-hosts its one web font (Literata). Indonesian is the default language at
-`/`; English lives under `/en/`, with the same English URL slugs.
+and self-hosts its one web font (Literata). English is the default language at
+`/`; Indonesian lives under `/id/`, with the same English URL slugs.
 
 Licensed under [Apache-2.0](LICENSE). See [NOTICE](NOTICE).
 
@@ -91,7 +91,7 @@ src/
   i18n/ui.ts                 shared interface strings, navigation lists
   site.ts                    contact email and GitHub URL
   views/                     one component per page, taking a `lang` prop
-  pages/ and pages/en/       thin route files that render the views
+  pages/ and pages/id/       thin route files that render the views (English at /, Indonesian at /id/)
   components/                wordmark, "two lights" mark, header, footer, lists
   styles/global.css          colour tokens (light and dark), type, layout
 public/                      favicon, social image (og.png), robots.txt
@@ -118,7 +118,7 @@ several categories, and moving a tool between categories never changes its URL.
 
    `status` is `pilot`, `available`, or `coming-soon`. `repository` may be `null`.
    The tool now appears in `/tools/`, its category pages, the Tools menu, and gets
-   a basic product page at `/tools/my-tool/` (and `/en/tools/my-tool/`).
+   a basic product page at `/tools/my-tool/` (and `/id/tools/my-tool/`).
 
 2. For a full product page, add `src/content/tool-pages/my-tool/id.md` and
    `en.md`. Copy an existing one; the fields are checked by
@@ -131,10 +131,18 @@ intro paragraphs in both languages), then tag tools with its slug. The
 `/for/<slug>/` pages, the menu, and the footer update automatically. A category
 with no tools is left out of the menu and the lists.
 
+### Change the default language
+
+The default language is `defaultLang` in `src/i18n/ui.ts`; it is served at `/`
+and the other language under its code (`/id/`). To swap them, change
+`defaultLang` and the prefix in `getLang`/`stripLang` there, move the route files
+between `src/pages/` and `src/pages/<code>/`, and update `defaultLocale` in
+`astro.config.mjs`.
+
 ### Add a page later (Consultation, Donate)
 
 Create `src/views/<Page>.astro`, add route files at `src/pages/<slug>/index.astro`
-and `src/pages/en/<slug>/index.astro`, add its label to both languages in
+and `src/pages/id/<slug>/index.astro`, add its label to both languages in
 `src/i18n/ui.ts`, and add it to `primaryNav` and/or `footerNav` there.
 
 ## Content rules
@@ -149,7 +157,7 @@ Every placeholder is visibly marked on the site. Current list:
 
 | Where | What | Status |
 |---|---|---|
-| `/privacy/`, `/en/privacy/` | The whole page is a draft with headings only. Server location, data export and deletion are "to be written". | Clearly marked as a draft on the page |
+| `/privacy/`, `/id/privacy/` | The whole page is a draft with headings only. Server location, data export and deletion are "to be written". | Clearly marked as a draft on the page |
 | Hosting (home, `/hosting/`, Liturgist app page) | Price of the hosted version | Shown as "coming soon" / "biaya akan diumumkan" |
 | `/tools/liturgist/` | The repository isn't public, so the page says "not published yet" and links to the GitHub organization. Set `repository` in `tools.json` when it's public. | Marked on the page |
 | `NOTICE` | Copyright holder written as "The Brightfellow contributors" | Confirm the wording |
