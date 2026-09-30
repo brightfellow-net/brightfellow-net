@@ -12,8 +12,8 @@ export default defineConfig({
   integrations: [
     sitemap({
       i18n: {
-        defaultLocale: 'id',
-        locales: { id: 'id-ID', en: 'en-US' },
+        defaultLocale: 'en',
+        locales: { en: 'en-US', id: 'id-ID' },
       },
     }),
   ],
