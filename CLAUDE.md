@@ -79,8 +79,8 @@ Build these pages:
 
 ## 5. Language
 
-- **Bahasa Indonesia is the default language**; English is secondary.
-- **ASK:** bilingual (ID + EN with a language switch) or Indonesian only for v1? Default if unanswered: bilingual, Indonesian at `/`, English under `/en/` with the same English slugs (e.g. `/tools/liturgist/` and `/en/tools/liturgist/`).
+- **English is the default language**, served at `/`; Bahasa Indonesia is the second language, under `/id/`. (Decided 2026-09-30; the original brief had Indonesian as the default.)
+- The site is bilingual with a language switch. Both versions use the same English slugs (e.g. `/tools/liturgist/` and `/id/tools/liturgist/`).
 - Write natural, friendly Indonesian, not literal translations of English marketing copy.
 
 ## 6. Content rules and constraints

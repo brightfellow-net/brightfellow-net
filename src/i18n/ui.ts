@@ -1,19 +1,19 @@
-export const langs = ['id', 'en'] as const;
+export const langs = ['en', 'id'] as const;
 export type Lang = (typeof langs)[number];
-export const defaultLang: Lang = 'id';
+export const defaultLang: Lang = 'en';
 
 export const langMeta = {
-  id: { name: 'Bahasa Indonesia', short: 'ID', ogLocale: 'id_ID' },
   en: { name: 'English', short: 'EN', ogLocale: 'en_US' },
+  id: { name: 'Bahasa Indonesia', short: 'ID', ogLocale: 'id_ID' },
 } as const;
 
 export function getLang(url: URL): Lang {
-  return /^\/en(\/|$)/.test(url.pathname) ? 'en' : 'id';
+  return /^\/id(\/|$)/.test(url.pathname) ? 'id' : 'en';
 }
 
-/** Path without the language prefix, e.g. /en/tools/ -> /tools/ */
+/** Path without the language prefix, e.g. /id/tools/ -> /tools/ */
 export function stripLang(pathname: string): string {
-  return pathname.replace(/^\/en(?=\/|$)/, '') || '/';
+  return pathname.replace(/^\/id(?=\/|$)/, '') || '/';
 }
 
 /** Localized path for a language-neutral path like /tools/ */
