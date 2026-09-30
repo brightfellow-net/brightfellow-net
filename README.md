@@ -139,6 +139,10 @@ and the other language under its code (`/id/`). To swap them, change
 between `src/pages/` and `src/pages/<code>/`, and update `defaultLocale` in
 `astro.config.mjs`.
 
+English used to live under `/en/`. `astro.config.mjs` still generates small
+redirect pages from those old URLs to the new ones (built from the tools and
+categories data files, so new entries are covered automatically).
+
 ### Add a page later (Consultation, Donate)
 
 Create `src/views/<Page>.astro`, add route files at `src/pages/<slug>/index.astro`
